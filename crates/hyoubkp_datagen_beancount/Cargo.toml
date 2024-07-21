@@ -1,0 +1,8 @@
+[package]
+name = "bc_cvt"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bc_core = { version = "*", path = "../bc_core" }
+enum_dispatch = "0.3.12"

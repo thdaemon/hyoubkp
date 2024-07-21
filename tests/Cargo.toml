@@ -1,0 +1,12 @@
+[package]
+name = "hyoubkp_tests"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[dev-dependencies]
+hyoubkp = { path = "../crates/hyoubkp" }
+
+[[test]]
+name = "test_expr_simple"
+path = "src/test_expr_simple.rs"

@@ -1,0 +1,10 @@
+[package]
+name = "hyoubkp_datagen_gnucash"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+csv = "1.3.0"
+serde = { workspace = true }
+hyoubkp_base = { path = "../hyoubkp_base" }
+uuid = { version = "1.10.0", features = ["v4", "fast-rng"] }

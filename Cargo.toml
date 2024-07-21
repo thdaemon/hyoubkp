@@ -1,0 +1,17 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/hyoubkp",
+    "crates/hyoubkp_cli",
+    "crates/hyoubkp_tokmap_example",
+    "crates/hyoubkp_tokmap_ffi",
+    "crates/hyoubkp_tokmap_python",
+    "crates/hyoubkp_datagen_gnucash",
+    "tests",
+]
+
+[workspace.dependencies]
+anyhow = { version = "1.0.75", features = ["backtrace"] }
+clap = { version = "4.4.6", features = ["derive"] }
+enum_dispatch = "0.3.13"
+serde = { version = "1.0.204", features = ["derive"] }

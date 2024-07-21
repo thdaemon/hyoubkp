@@ -1,0 +1,10 @@
+[package]
+name = "hyoubkp_cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hyoubkp = { path = "../hyoubkp", features = ["clap"] }
+hyoubkp_base = { path = "../hyoubkp_base" }
+anyhow = { workspace = true }
+clap = { workspace = true }

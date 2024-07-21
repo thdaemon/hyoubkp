@@ -1,0 +1,10 @@
+[package]
+name = "hyoubkp_tokmap_example"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+user = []
+
+[dependencies]
+hyoubkp_base = { path = "../hyoubkp_base" }
