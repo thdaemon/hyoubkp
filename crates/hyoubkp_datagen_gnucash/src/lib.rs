@@ -64,7 +64,7 @@ impl DataGen for DataGenImpl {
                     wtr.serialize(GnuCashCSVRow {
                         date: trans.date.to_string(),
                         transaction_id: transaction_id.clone(),
-                        number: number,
+                        number: number + trans.num_base,
                         description: description,
                         reconcile: String::from("n"),
                         full_account_name: e.account.clone(),
@@ -75,7 +75,7 @@ impl DataGen for DataGenImpl {
                     wtr.serialize(GnuCashCSVRow {
                         date: trans.date.to_string(),
                         transaction_id: transaction_id.clone(),
-                        number: number,
+                        number: number + trans.num_base,
                         description: description,
                         reconcile: String::from("n"),
                         full_account_name: e.account.clone(),

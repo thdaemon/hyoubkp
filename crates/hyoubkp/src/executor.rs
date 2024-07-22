@@ -11,6 +11,7 @@ pub struct Executor {
     pub parser: Parser,
 
     date: Date,
+    num_base: u32,
 }
 
 impl Executor {
@@ -24,7 +25,8 @@ impl Executor {
         Self {
             token_mapper,
             parser,
-            date: Date::today()
+            date: Date::today(),
+            num_base: 0,
         }
     }
 
@@ -45,6 +47,7 @@ impl Executor {
         let mut transaction = tokmap_dispatch!(tm, &self.token_mapper, factory.build(tm));
 
         transaction.date = self.date;
+        transaction.num_base = self.num_base;
 
         if transaction.has_build_error {
             transaction.description = Some(
@@ -65,6 +68,10 @@ impl Executor {
 
         if let Some(date) = directive.strip_prefix(".date ") {
             self.date = Date::from(date);
+        }
+
+        if let Some(num) = directive.strip_prefix(".num ") {
+            self.num_base = num.parse()?;
         }
 
         Ok(())

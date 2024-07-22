@@ -4,9 +4,9 @@ use std::fmt::{Debug, Display};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-trait IntoHyouBkpError: StdError {}
-impl IntoHyouBkpError for std::io::Error {}
-impl IntoHyouBkpError for std::num::ParseIntError {}
+trait IntoHyoubkpError: StdError {}
+impl IntoHyoubkpError for std::io::Error {}
+impl IntoHyoubkpError for std::num::ParseIntError {}
 
 #[derive(Debug)]
 pub struct Error {
@@ -19,7 +19,7 @@ impl StdError for Error {}
 impl Error {
     pub(crate) fn new(id: Option<&'static str>, s: impl AsRef<str>) -> Self {
         Self {
-            message: format!("{}: {}", id.unwrap_or("BookCat error"), s.as_ref()),
+            message: format!("{}: {}", id.unwrap_or("Hyoubkp error"), s.as_ref()),
             backtrace: std::backtrace::Backtrace::capture(),
         }
     }
@@ -33,7 +33,7 @@ impl Display for Error {
 
 impl<E> From<E> for Error
 where
-    E: IntoHyouBkpError,
+    E: IntoHyoubkpError,
 {
     fn from(error: E) -> Self {
         Self::new(Some(std::any::type_name::<E>()), error.to_string())

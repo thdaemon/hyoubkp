@@ -12,6 +12,7 @@ use crate::{
 pub struct Transaction {
     pub has_build_error: bool,
     pub date: Date,
+    pub num_base: u32,
     pub debit_entries: Vec<Entry>,
     pub credit_entries: Vec<Entry>,
     pub description: Option<String>,
