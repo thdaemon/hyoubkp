@@ -48,6 +48,7 @@ impl Executor {
 
         transaction.date = self.date;
         transaction.num_base = self.num_base;
+        transaction.orig_expr = Some(expr.as_ref().to_string());
 
         if transaction.has_build_error {
             transaction.description = Some(

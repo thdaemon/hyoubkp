@@ -16,6 +16,7 @@ pub struct Transaction {
     pub debit_entries: Vec<Entry>,
     pub credit_entries: Vec<Entry>,
     pub description: Option<String>,
+    pub orig_expr: Option<String>,
 }
 
 #[derive(Debug)]
@@ -41,6 +42,10 @@ impl std::fmt::Display for Amount {
 
 impl std::fmt::Display for Transaction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if let Some(expr) = &self.orig_expr {
+            writeln!(f, "Expression: {}", expr)?;
+        }
+        writeln!(f, "Date: {}, num base: {}", self.date, self.num_base)?;
         writeln!(
             f,
             "Transaction desc: {}",
@@ -128,21 +133,15 @@ impl TransactionFactory {
     }
 
     pub fn check_credit(&self, account: &[&str]) -> bool {
-        account.iter().any(|a| {
-            *a == self
-                .credit_tok
-                .as_deref()
-                .unwrap_or_default()
-        })
+        account
+            .iter()
+            .any(|a| *a == self.credit_tok.as_deref().unwrap_or_default())
     }
 
     pub fn check_debit(&self, account: &[&str]) -> bool {
-        account.iter().any(|a| {
-            *a == self
-                .debit_tok
-                .as_deref()
-                .unwrap_or_default()
-        })
+        account
+            .iter()
+            .any(|a| *a == self.debit_tok.as_deref().unwrap_or_default())
     }
 
     pub fn check_opposite(&self, account: &[&str]) -> bool {
@@ -221,7 +220,7 @@ impl TransactionFactory {
                             .unwrap_or_else(|| token_mapper.fallback_account()),
                         amount: Amount::Price(trans.price_debit),
                     });
-    
+
                     if trans.price_credit_chain.is_empty() {
                         self.transaction.credit_entries.push(Entry {
                             account: self
@@ -233,10 +232,10 @@ impl TransactionFactory {
                         });
                     } else {
                         let mut price = trans.price_debit.clone();
-    
+
                         for pc in trans.price_credit_chain.iter() {
                             let reward;
-    
+
                             match pc {
                                 ExprCreditPrice::Reward(r) => {
                                     reward = r.clone();
@@ -247,7 +246,7 @@ impl TransactionFactory {
                                     price = c.clone();
                                 }
                             }
-    
+
                             self.current_account = None;
                             token_mapper.on_reward(self);
                             self.transaction.credit_entries.push(Entry {
@@ -258,7 +257,7 @@ impl TransactionFactory {
                                 amount: Amount::Price(reward),
                             });
                         }
-    
+
                         self.transaction.credit_entries.push(Entry {
                             account: self
                                 .credit_account
@@ -269,7 +268,7 @@ impl TransactionFactory {
                         });
                     }
                 }
-    
+
                 for e in trans.cash_backs.iter() {
                     self.current_account = None;
                     token_mapper.on_reward(self);
@@ -280,7 +279,7 @@ impl TransactionFactory {
                             .unwrap_or_else(|| token_mapper.fallback_account()),
                         amount: Amount::Price(e.clone()),
                     });
-    
+
                     self.transaction.debit_entries.push(Entry {
                         account: self
                             .credit_account
