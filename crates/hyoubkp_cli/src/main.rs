@@ -63,7 +63,9 @@ fn main() -> Result<()> {
     for expr in input.lines() {
         let expr = expr?;
 
-        if expr.starts_with('.') {
+        if expr.is_empty() {
+            continue;
+        } else if expr.starts_with('.') {
             executor.parse_directive(expr)?;
         } else {
             let trans = executor.parse_expr(expr)?;
