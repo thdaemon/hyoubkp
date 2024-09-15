@@ -31,8 +31,8 @@ impl Executor {
     }
 
     pub fn parse_expr(&mut self, expr: impl AsRef<str>) -> ParseResult<Transaction> {
-        let cexpr = self.parser.parse_expr(expr.as_ref())?;
         self.parser.reset();
+        let cexpr = self.parser.parse_expr(expr.as_ref())?;
 
         let mut factory: TransactionFactory = TransactionFactory::default();
 

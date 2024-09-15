@@ -138,7 +138,7 @@ extern "C" fn app_action_MainViewController_textField1_DidChange(
         Ok(trans) => trans.to_string(),
         Err(e) => e.to_string(),
     })
-    .unwrap();
+    .unwrap_or_default();
 
     unsafe {
         appui_uikit_label_set_text(label1, text.as_ptr());

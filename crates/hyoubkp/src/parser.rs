@@ -492,11 +492,19 @@ macro_rules! parse_fail {
 
 impl std::fmt::Display for ParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(
-            f,
-            "ParseError at '{}' ({}): {}",
-            self.ch, self.pos, self.msg
-        )
+        if self.ch == '\0' {
+            writeln!(
+                f,
+                "ParseError at NUL ({}): {}",
+                self.pos, self.msg
+            )
+        } else {
+            writeln!(
+                f,
+                "ParseError at '{}' ({}): {}",
+                self.ch, self.pos, self.msg
+            )
+        }
     }
 }
 
