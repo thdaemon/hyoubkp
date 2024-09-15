@@ -1,0 +1,4 @@
+*.ipa
+*.dSYM
+/libui/build
+/Payload/HyoubkpMobile.app/HyoubkpMobile

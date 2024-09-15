@@ -1,0 +1,15 @@
+[package]
+name = "hyoubkp_mobile_ios"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "HyoubkpMobile"
+path = "src/main.rs"
+
+[dependencies]
+hyoubkp = { path = "../hyoubkp", features = ["tokmap_user"] }
+hyoubkp_base = { path = "../hyoubkp_base" }
+
+[build-dependencies]
+cmake = "0.1"
