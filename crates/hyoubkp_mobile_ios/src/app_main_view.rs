@@ -7,7 +7,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use hyoubkp::datagen::{DataGenDispatch, DataGenKind};
+use hyoubkp::{datagen::{DataGenDispatch, DataGenKind}, executor};
 use hyoubkp_base::datagen::DataGen;
 
 pub use hyoubkp::executor::Executor;
@@ -66,9 +66,12 @@ unsafe extern "C" fn app_action_MainViewController_self_Load(
         if number == 0 {}
     }
 
+    let mut executor = Executor::new(TokenMapperKind::User);
+    executor.enable_realtime_date();
+
     APPCTX
         .set(AppMainView {
-            executor: Executor::new(TokenMapperKind::User),
+            executor,
             number,
             output_file_name,
             output_file_name_backup: document_path.join("output.csv.bak"),

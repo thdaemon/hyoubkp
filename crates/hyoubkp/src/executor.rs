@@ -10,7 +10,7 @@ pub struct Executor {
     pub token_mapper: TokenMapperDispatch,
     pub parser: Parser,
 
-    date: Date,
+    date: ExecutorDate,
     num_base: u32,
 }
 
@@ -25,7 +25,7 @@ impl Executor {
         Self {
             token_mapper,
             parser,
-            date: Date::today(),
+            date: ExecutorDate::default(),
             num_base: 0,
         }
     }
@@ -46,7 +46,7 @@ impl Executor {
 
         let mut transaction = tokmap_dispatch!(tm, &self.token_mapper, factory.build(tm));
 
-        transaction.date = self.date;
+        transaction.date = self.date.get_date();
         transaction.num_base = self.num_base;
         transaction.orig_expr = Some(expr.as_ref().to_string());
 
@@ -68,7 +68,7 @@ impl Executor {
         let directive = directive.as_ref();
 
         if let Some(date) = directive.strip_prefix(".date ") {
-            self.date = Date::from(date);
+            self.date = ExecutorDate::Fixed(Date::from(date));
         }
 
         if let Some(num) = directive.strip_prefix(".num ") {
@@ -76,5 +76,30 @@ impl Executor {
         }
 
         Ok(())
+    }
+
+    pub fn enable_realtime_date(&mut self) {
+        self.date = ExecutorDate::Realtime;
+    }
+}
+
+#[derive(Debug)]
+pub enum ExecutorDate {
+    Fixed(Date),
+    Realtime,
+}
+
+impl Default for ExecutorDate {
+    fn default() -> Self {
+        Self::Fixed(Date::today())
+    }
+}
+
+impl ExecutorDate {
+    pub fn get_date(&self) -> Date {
+        match self {
+            ExecutorDate::Fixed(d) => d.clone(),
+            ExecutorDate::Realtime => Date::today(),
+        }
     }
 }
