@@ -22,6 +22,23 @@ void appui_uikit_textField_set_text(void *textField, char const *s) {
     _self.text = [NSString stringWithUTF8String:s];
 }
 
+void appui_uikit_alertctrl(void *vc, char const *title, char const *message, void const *callback_userdata) {
+    UIViewController *_self = (__bridge UIViewController *)vc;
+
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:[NSString stringWithUTF8String:title]
+                               message:[NSString stringWithUTF8String:message]
+                               preferredStyle:UIAlertControllerStyleAlert];
+ 
+    UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
+        handler:^(UIAlertAction *action) {
+            // todo
+        }
+    ];
+ 
+    [alert addAction:defaultAction];
+    [_self presentViewController:alert animated:YES completion:nil];
+}
+
 char const *appui_fs_document_path() {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths firstObject];

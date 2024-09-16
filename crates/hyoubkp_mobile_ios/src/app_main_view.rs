@@ -7,7 +7,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use hyoubkp::{datagen::{DataGenDispatch, DataGenKind}, executor};
+use hyoubkp::datagen::{DataGenDispatch, DataGenKind};
 use hyoubkp_base::datagen::DataGen;
 
 pub use hyoubkp::executor::Executor;
@@ -96,30 +96,36 @@ extern "C" fn app_action_MainViewController_button1_Tapped(
 
     let ctx = unsafe { APPCTX.get_mut().unwrap() };
 
-    let trans = ctx.executor.parse_expr(expr).unwrap_or_default();
+    match ctx.executor.parse_expr(expr) {
+        Ok(trans) => {
+            let output_file_name = &ctx.output_file_name;
 
-    let output_file_name = &ctx.output_file_name;
-
-    let datagen_impl = DataGenDispatch::new(DataGenKind::GnuCash);
-
-    let mut file = std::fs::OpenOptions::new()
-        .create(true)
-        .write(true)
-        .append(true)
-        .open(output_file_name)
-        .unwrap();
-
-    datagen_impl
-        .write_to(&mut file, std::slice::from_ref(&trans), ctx.number as u32)
-        .unwrap();
-
-    ctx.number += 1;
-    unsafe {
-        appui_userdefaults_set_i32(USERDEFAULTS_KEY_NUMBER.as_ptr(), ctx.number);
-    }
-
-    unsafe {
-        appui_uikit_textField_set_text(text_field1, c"".as_ptr());
+            let datagen_impl = DataGenDispatch::new(DataGenKind::GnuCash);
+        
+            let mut file = std::fs::OpenOptions::new()
+                .create(true)
+                .write(true)
+                .append(true)
+                .open(output_file_name)
+                .unwrap();
+        
+            datagen_impl
+                .write_to(&mut file, std::slice::from_ref(&trans), ctx.number as u32)
+                .unwrap();
+        
+            ctx.number += 1;
+            unsafe {
+                appui_userdefaults_set_i32(USERDEFAULTS_KEY_NUMBER.as_ptr(), ctx.number);
+            }
+        
+            unsafe {
+                appui_uikit_textField_set_text(text_field1, c"".as_ptr());
+            }
+        },
+        Err(e) => {
+            let e = CString::new(e.to_string()).unwrap_or_default();
+            unsafe { appui_uikit_alertctrl(vc, c"Error".as_ptr(), e.as_ptr(), std::ptr::null()) };
+        },
     }
 }
 

@@ -10,6 +10,8 @@ void appui_uikit_label_set_text(void *label, char const *s);
 char const *appui_uikit_textField_get_text(void *textField);
 void appui_uikit_textField_set_text(void *textField, char const *s);
 
+void appui_uikit_alertctrl(void *vc, char const *title, char const *message, void const *callback_userdata);
+
 char const *appui_fs_document_path();
 
 bool appui_userdefaults_fsync();
