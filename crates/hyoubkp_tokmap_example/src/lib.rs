@@ -1,8 +1,11 @@
 #[cfg(feature = "user")]
 pub mod user;
 
-use hyoubkp_base::tokmap::TokenMapper;
+use std::collections::HashMap;
+
+use hyoubkp_base::tokmap::{TokenMapper, TokenMapperOption};
 use hyoubkp_base::transaction::TransactionFactory;
+use hyoubkp_base::error::Result;
 
 #[derive(Debug)]
 pub struct TokenMapperImpl {
@@ -11,15 +14,19 @@ pub struct TokenMapperImpl {
 }
 
 impl TokenMapperImpl {
-    pub fn new() -> TokenMapperImpl {
-        Self {
+    pub fn new(_options: &HashMap<TokenMapperOption, String>) -> Result<TokenMapperImpl> {
+        Ok(Self {
             bank_account_tokens: vec!["工行", "农行", "中行", "建行", "交行", "邮储"],
             expense_account_tokens: vec!["用餐", "杂项"],
-        }
+        })
     }
 }
 
 impl TokenMapper for TokenMapperImpl {
+    fn is_option_supported(_opt: TokenMapperOption) -> bool {
+        false
+    }
+
     fn register_account_tokens(&self) -> Vec<&'static str> {
         let mut v = self.bank_account_tokens.clone();
         v.extend(self.expense_account_tokens.iter());

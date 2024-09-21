@@ -1,18 +1,27 @@
 use std::io::{BufRead, BufReader, Write};
 
 use anyhow::Result;
+use clap::ValueEnum;
 use hyoubkp::{
     datagen::{DataGenDispatch, DataGenKind},
     tokmap::TokenMapperKind,
 };
-use hyoubkp_base::datagen::DataGen;
+use hyoubkp_base::{datagen::DataGen, tokmap::TokenMapperOption};
 
 #[derive(clap::Parser, Debug)]
 #[clap(author, version, about)]
 struct Command {
     /// token mapper type
-    #[clap(short = 't', long)]
+    #[clap(short = 't', long, default_value = "example")]
     token_mapper: TokenMapperKind,
+
+    /// token mapper options
+    #[arg(short = 'T', long, value_parser = parse_key_value::<TokenMapperOption>)]
+    token_mapper_options: Vec<(TokenMapperOption, String)>,
+
+    /// print all available token mapper options
+    #[clap(long)]
+    print_token_mapper_options: bool,
 
     /// Input file that contains the expressions, NL-splited. default stdin
     #[clap(short = 'i', long)]
@@ -23,7 +32,7 @@ struct Command {
     output: Option<String>,
 
     /// Data-gen backend
-    #[clap(short = 'd', long)]
+    #[clap(short = 'd', long, default_value = "str")]
     datagen: DataGenKind,
 
     /// Data-gen backend options (Not implemented)
@@ -46,7 +55,21 @@ struct Command {
 fn main() -> Result<()> {
     let args = <Command as clap::Parser>::parse();
 
-    let mut executor = hyoubkp::executor::Executor::new(args.token_mapper);
+    if args.print_token_mapper_options {
+        for opt in TokenMapperOption::OPTIONS.iter() {
+            println!(
+                "-T {} [supported by: {}]",
+                opt.description(),
+                TokenMapperKind::generate_option_supported_tokmap_names(*opt).join(", ")
+            )
+        }
+
+        return Ok(());
+    }
+
+    let tokmap_options = args.token_mapper_options.into_iter().collect();
+
+    let mut executor = hyoubkp::executor::Executor::new(args.token_mapper, &tokmap_options)?;
     let datagen_impl = DataGenDispatch::new(args.datagen);
 
     let input: Box<dyn BufRead> = match args.input {
@@ -75,4 +98,16 @@ fn main() -> Result<()> {
     }
 
     Ok(())
+}
+
+fn parse_key_value<T: ValueEnum>(s: &str) -> Result<(T, String), String> {
+    let parts: Vec<&str> = s.splitn(2, '=').collect();
+    if parts.len() != 2 {
+        return Err("Invalid format, expected key=value".to_string());
+    }
+
+    let key = T::from_str(parts[0], true)?;
+
+    let value = parts[1].to_string();
+    Ok((key, value))
 }

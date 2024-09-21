@@ -1,10 +1,7 @@
 #![allow(non_snake_case)]
 
 use std::{
-    cell::OnceCell,
-    ffi::{CStr, CString, OsStr},
-    os::unix::ffi::OsStrExt,
-    path::{Path, PathBuf},
+    cell::OnceCell, collections::HashMap, ffi::{CStr, CString, OsStr}, os::unix::ffi::OsStrExt, path::{Path, PathBuf}
 };
 
 use hyoubkp::datagen::{DataGenDispatch, DataGenKind};
@@ -66,7 +63,9 @@ unsafe extern "C" fn app_action_MainViewController_self_Load(
         if number == 0 {}
     }
 
-    let mut executor = Executor::new(TokenMapperKind::User);
+    let tokmap_options = HashMap::new();
+
+    let mut executor = Executor::new(TokenMapperKind::User, &tokmap_options).unwrap();
     executor.enable_realtime_date();
 
     APPCTX
@@ -99,16 +98,19 @@ extern "C" fn app_action_MainViewController_button1_Tapped(
     match ctx.executor.parse_expr(expr) {
         Ok(trans) => {
             let output_file_name = &ctx.output_file_name;
+            let output_file_name_backup = &ctx.output_file_name_backup;
 
             let datagen_impl = DataGenDispatch::new(DataGenKind::GnuCash);
         
+            std::fs::copy(output_file_name, output_file_name_backup).unwrap();
+
             let mut file = std::fs::OpenOptions::new()
                 .create(true)
                 .write(true)
                 .append(true)
                 .open(output_file_name)
                 .unwrap();
-        
+
             datagen_impl
                 .write_to(&mut file, std::slice::from_ref(&trans), ctx.number as u32)
                 .unwrap();

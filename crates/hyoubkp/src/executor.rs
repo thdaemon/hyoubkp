@@ -1,9 +1,12 @@
+use std::collections::HashMap;
+
 use crate::parser::{parse_fail, ParseError, ParseResult, Parser};
 use crate::tokmap::{tokmap_dispatch, TokenMapperDispatch, TokenMapperKind};
 use hyoubkp_base::date::Date;
-use hyoubkp_base::tokmap::TokenMapper;
+use hyoubkp_base::tokmap::{TokenMapper, TokenMapperOption};
 use hyoubkp_base::transaction::Transaction;
 use hyoubkp_base::transaction::TransactionFactory;
+use hyoubkp_base::error::Result;
 
 #[derive(Debug)]
 pub struct Executor {
@@ -15,19 +18,19 @@ pub struct Executor {
 }
 
 impl Executor {
-    pub fn new(tokmap_kind: TokenMapperKind) -> Self {
-        let token_mapper = TokenMapperDispatch::new(tokmap_kind);
+    pub fn new(tokmap_kind: TokenMapperKind, options: &HashMap<TokenMapperOption, String>) -> Result<Self> {
+        let token_mapper = TokenMapperDispatch::new(tokmap_kind, options)?;
         let parser = Parser::new(
             &tokmap_dispatch!(tm, &token_mapper, tm.register_account_tokens()),
             &tokmap_dispatch!(tm, &token_mapper, tm.register_hint_tokens()),
         );
 
-        Self {
+        Ok(Self {
             token_mapper,
             parser,
             date: ExecutorDate::default(),
             num_base: 0,
-        }
+        })
     }
 
     pub fn parse_expr(&mut self, expr: impl AsRef<str>) -> ParseResult<Transaction> {
@@ -64,7 +67,7 @@ impl Executor {
     pub fn parse_directive(
         &mut self,
         directive: impl AsRef<str>,
-    ) -> Result<(), hyoubkp_base::error::Error> {
+    ) -> Result<()> {
         let directive = directive.as_ref();
 
         if let Some(date) = directive.strip_prefix(".date ") {

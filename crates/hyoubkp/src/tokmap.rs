@@ -1,3 +1,8 @@
+use std::collections::HashMap;
+
+use hyoubkp_base::error::Result;
+use hyoubkp_base::tokmap::{TokenMapper, TokenMapperOption};
+
 #[cfg(feature = "tokmap_example")]
 pub use hyoubkp_tokmap_example as tokmap_impl_example;
 
@@ -18,6 +23,20 @@ pub enum TokenMapperKind {
     Python = 3,
 }
 
+impl TokenMapperKind {
+    #[rustfmt::skip]
+    pub fn generate_option_supported_tokmap_names(opt: TokenMapperOption) -> Vec<&'static str> {
+        let mut v = vec![];
+
+        #[cfg(feature = "tokmap_example")]
+        if tokmap_impl_example::TokenMapperImpl::is_option_supported(opt) { v.push("example"); }
+        #[cfg(feature = "tokmap_user")]
+        if tokmap_impl_user::TokenMapperImpl::is_option_supported(opt) { v.push("user"); }
+
+        v
+    }
+}
+
 #[derive(Debug)]
 pub enum TokenMapperDispatch {
     #[cfg(feature = "tokmap_example")]
@@ -27,13 +46,15 @@ pub enum TokenMapperDispatch {
 }
 
 impl TokenMapperDispatch {
-    pub fn new(kind: TokenMapperKind) -> Self {
-        match kind {
+    pub fn new(kind: TokenMapperKind, options: &HashMap<TokenMapperOption, String>) -> Result<Self> {
+        Ok(match kind {
             #[cfg(feature = "tokmap_example")]
-            TokenMapperKind::Example => Self::Example(tokmap_impl_example::TokenMapperImpl::new()),
+            TokenMapperKind::Example => {
+                Self::Example(tokmap_impl_example::TokenMapperImpl::new(options)?)
+            }
             #[cfg(feature = "tokmap_user")]
-            TokenMapperKind::User => Self::User(tokmap_impl_user::TokenMapperImpl::new()),
-        }
+            TokenMapperKind::User => Self::User(tokmap_impl_user::TokenMapperImpl::new(options)?),
+        })
     }
 }
 

@@ -5,6 +5,6 @@ edition = "2021"
 
 [dependencies]
 hyoubkp = { path = "../hyoubkp", features = ["clap"] }
-hyoubkp_base = { path = "../hyoubkp_base" }
+hyoubkp_base = { path = "../hyoubkp_base", features = ["clap"] }
 anyhow = { workspace = true }
 clap = { workspace = true }

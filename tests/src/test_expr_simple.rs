@@ -1,8 +1,10 @@
+use std::collections::HashMap;
+
 use hyoubkp::{executor::Executor, tokmap::TokenMapperKind};
 
 #[test]
 fn test_expr_bank_transfer() {
-    let mut executor = Executor::new(TokenMapperKind::Example);
+    let mut executor = Executor::new(TokenMapperKind::Example, &HashMap::new()).unwrap();
     assert_eq!(
         executor.parse_expr("工行农行 20").unwrap().to_string(),
         "Transaction desc: \n\
@@ -13,7 +15,7 @@ fn test_expr_bank_transfer() {
 
 #[test]
 fn test_expr_unmaped_account() {
-    let mut executor = Executor::new(TokenMapperKind::Example);
+    let mut executor = Executor::new(TokenMapperKind::Example, &HashMap::new()).unwrap();
     assert_eq!(
         executor.parse_expr("工行邮储 20").unwrap().to_string(),
         "Transaction desc:  FIXME:[工行邮储 20]\n\
@@ -24,7 +26,7 @@ fn test_expr_unmaped_account() {
 
 #[test]
 fn test_expr_reward() {
-    let mut executor = Executor::new(TokenMapperKind::Example);
+    let mut executor = Executor::new(TokenMapperKind::Example, &HashMap::new()).unwrap();
     assert_eq!(
         executor.parse_expr("工行农行 20-5").unwrap().to_string(),
         "Transaction desc: \n\
@@ -45,7 +47,7 @@ fn test_expr_reward() {
 
 #[test]
 fn test_expense() {
-    let mut executor = Executor::new(TokenMapperKind::Example);
+    let mut executor = Executor::new(TokenMapperKind::Example, &HashMap::new()).unwrap();
     assert_eq!(
         executor.parse_expr("中行用餐 20-5").unwrap().to_string(),
         "Transaction desc: \n\
@@ -73,7 +75,7 @@ fn test_expense() {
 
 #[test]
 fn test_expr_compound() {
-    let mut executor = Executor::new(TokenMapperKind::Example);
+    let mut executor = Executor::new(TokenMapperKind::Example, &HashMap::new()).unwrap();
     assert_eq!(
         executor
             .parse_expr("工行农行 20-1 30 50@45-10@1 中行 10，建行 5-1 邮储 6.2")
