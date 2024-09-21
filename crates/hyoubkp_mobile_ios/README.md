@@ -1,22 +1,22 @@
-# Hyoubkp mobile for iOS
+# Hyoubkp Mobile for iOS
 
-## Prepare the toolchain
+## Preparing the Toolchain
 
-I haven't a Mac, so only cross-compile on Linux is supported! :-)
+I don't have a Mac, so only cross-compiling on Linux is supported! :-)
 
-1. Install the [cctools-port](https://github.com/tpoechtrager/cctools-port)
-2. Add the `/path/to/cctools-port-build-dir/target/bin` to `PATH`
-3. Add the iPhoneOS SDK directory to env-var `SDKROOT`
-4. Edit the `toolchain.cmake` file, change toolchain binaries directory
-5. `rustup target add aarch64-apple-ios`
+1. Install [cctools-port](https://github.com/tpoechtrager/cctools-port)
+2. Add `/path/to/cctools-port-build-dir/target/bin` to your `PATH`
+3. Set the iPhoneOS SDK directory as the `SDKROOT` environment variable
+4. (Optional) If you're using a non-default prefix, edit the `toolchain.cmake` and `.cargo/config.toml` files
+5. Run `rustup target add aarch64-apple-ios`
 
-## Build
+## Building the Project
 
 ```
-cargo build -r -p hyoubkp_mobile_ios --features hyoubkp/tokmap_user --target aarch64-apple-ios
+cargo build -r -p hyoubkp_mobile_ios --features hyoubkp/tokmap_rule --target aarch64-apple-ios
 ```
 
-## Make the app bundle and IPA
+## Creating the App Bundle and IPA
 
 ```
 cd crates/hyoubkp_mobile_ios
@@ -24,4 +24,6 @@ cp -f ../../target/aarch64-apple-ios/release/HyoubkpMobile Payload/HyoubkpMobile
 zip -r HyoubkpMobile.ipa Payload/
 ```
 
-Then, you can sideload the ipa to your phones. :-)
+After that, you can sideload the IPA onto your phone. :-)
+
+By the way, if you want to sign your app, you might want to check out [rcodesign](https://github.com/indygreg/apple-platform-rs/tree/main/apple-codesign). And if you want to sideload, you might want to check out [Sideloader](https://github.com/Dadoum/Sideloader).
