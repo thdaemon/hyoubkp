@@ -1,6 +1,7 @@
 use crate::transaction::TransactionFactory;
 
 pub trait TokenMapper {
+    fn get_version(&self) -> &'static str { "" }
     fn is_option_supported(opt: TokenMapperOption) -> bool;
     fn register_account_tokens(&self) -> Vec<&str>;
     fn register_hint_tokens(&self) -> Vec<&str>;

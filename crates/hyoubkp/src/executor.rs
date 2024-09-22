@@ -84,6 +84,10 @@ impl Executor {
     pub fn enable_realtime_date(&mut self) {
         self.date = ExecutorDate::Realtime;
     }
+
+    pub fn get_tokmap_version(&self) -> &'static str {
+        tokmap_dispatch!(tm, &self.token_mapper, tm.get_version())
+    }
 }
 
 #[derive(Debug)]

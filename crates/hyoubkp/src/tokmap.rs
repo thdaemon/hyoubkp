@@ -25,16 +25,27 @@ pub enum TokenMapperKind {
 }
 
 impl TokenMapperKind {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            #[cfg(feature = "tokmap_example")]
+            TokenMapperKind::Example => "example",
+            #[cfg(feature = "tokmap_user")]
+            TokenMapperKind::User => "user",
+            #[cfg(feature = "tokmap_rule")]
+            TokenMapperKind::Rule => "rule",
+        }
+    }
+
     #[rustfmt::skip]
     pub fn generate_option_supported_tokmap_names(opt: TokenMapperOption) -> Vec<&'static str> {
         let mut v = vec![];
 
         #[cfg(feature = "tokmap_example")]
-        if tokmap_impl_example::TokenMapperImpl::is_option_supported(opt) { v.push("example"); }
+        if tokmap_impl_example::TokenMapperImpl::is_option_supported(opt) { v.push(TokenMapperKind::Example.as_str()); }
         #[cfg(feature = "tokmap_user")]
-        if tokmap_impl_user::TokenMapperImpl::is_option_supported(opt) { v.push("user"); }
+        if tokmap_impl_user::TokenMapperImpl::is_option_supported(opt) { v.push(TokenMapperKind::User.as_str()); }
         #[cfg(feature = "tokmap_rule")]
-        if tokmap_impl_rule::TokenMapperImpl::is_option_supported(opt) { v.push("rule"); }
+        if tokmap_impl_rule::TokenMapperImpl::is_option_supported(opt) { v.push(TokenMapperKind::Rule.as_str()); }
 
         v
     }

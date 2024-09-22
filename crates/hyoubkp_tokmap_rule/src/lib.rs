@@ -32,6 +32,10 @@ impl TokenMapperImpl {
 }
 
 impl TokenMapper for TokenMapperImpl {
+    fn get_version(&self) -> &'static str {
+        env!("CARGO_PKG_VERSION")
+    }
+
     fn is_option_supported(opt: TokenMapperOption) -> bool {
         match opt {
             TokenMapperOption::RuleFile => true,

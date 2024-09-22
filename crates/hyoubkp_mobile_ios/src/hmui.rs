@@ -253,6 +253,11 @@ extern "C" {
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
+    pub fn appui_MainViewController_footLabel(
+        obj: *mut ::std::os::raw::c_void,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
     pub fn app_action_MainViewController_self_Load(
         vc: *mut ::std::os::raw::c_void,
         sender: *mut ::std::os::raw::c_void,

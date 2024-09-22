@@ -9,13 +9,11 @@ use std::{
 };
 
 use hyoubkp::datagen::{DataGenDispatch, DataGenKind};
+use hyoubkp::executor::Executor;
+use hyoubkp::tokmap::TokenMapperKind;
 use hyoubkp_base::datagen::DataGen;
 #[allow(unused_imports)]
 use hyoubkp_base::tokmap::TokenMapperOption;
-
-pub use hyoubkp::executor::Executor;
-pub use hyoubkp::tokmap::TokenMapperKind;
-pub use hyoubkp_base::transaction::Transaction;
 
 use crate::hmui::*;
 
@@ -73,6 +71,7 @@ extern "C" fn app_action_MainViewController_self_Load(
     let mut tokmap_options = HashMap::new();
 
     let tokmap_kind;
+    let mut tokmap_version = "";
 
     #[cfg(feature = "tokmap_user")]
     {
@@ -91,6 +90,8 @@ extern "C" fn app_action_MainViewController_self_Load(
     match Executor::new(tokmap_kind, &tokmap_options) {
         Ok(mut executor) => {
             executor.enable_realtime_date();
+
+            tokmap_version = executor.get_tokmap_version();
 
             unsafe {
                 APPCTX
@@ -123,6 +124,24 @@ extern "C" fn app_action_MainViewController_self_Load(
                 )
             };
         }
+    }
+
+    let foot_text = CString::new(format!(
+        r##"App version: {}, Hyoubkp version: {}, token-mapper: {} {}
+
+Copyright © 2024 Eric Tian <thxdaemon@gmail.com>. All rights reserved.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+You should have received a copy of the GNU Affero General Public License along with this program. If not, see <https://www.gnu.org/licenses/>."##,
+        env!("CARGO_PKG_VERSION"),
+        hyoubkp::VERSION,
+        tokmap_kind.as_str(),
+        tokmap_version
+    )).unwrap_or_default();
+
+    unsafe {
+        let label = appui_MainViewController_footLabel(vc);
+        appui_uikit_label_set_text(label, foot_text.as_ptr());
     }
 }
 

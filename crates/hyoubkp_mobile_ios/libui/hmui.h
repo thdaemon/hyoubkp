@@ -40,6 +40,7 @@ int32_t appui_userdefaults_get_i32(char const *key);
 
 UI_GET_PROPERTY(MainViewController, label1);
 UI_GET_PROPERTY(MainViewController, textField1);
+UI_GET_PROPERTY(MainViewController, footLabel);
 
 APP_ACTION_HANDLER(MainViewController, self, Load);
 APP_ACTION_HANDLER(MainViewController, button1, Tapped);
