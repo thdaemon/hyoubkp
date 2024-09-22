@@ -5,9 +5,10 @@ use hyoubkp_base::tokmap::{TokenMapper, TokenMapperOption};
 
 #[cfg(feature = "tokmap_example")]
 pub use hyoubkp_tokmap_example as tokmap_impl_example;
-
 #[cfg(feature = "tokmap_user")]
 pub use hyoubkp_tokmap_example::user as tokmap_impl_user;
+#[cfg(feature = "tokmap_rule")]
+pub use hyoubkp_tokmap_rule as tokmap_impl_rule;
 
 #[derive(Debug, Copy, Clone)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
@@ -17,8 +18,8 @@ pub enum TokenMapperKind {
     Example = 0,
     #[cfg(feature = "tokmap_user")]
     User = 1,
-    #[cfg(feature = "tokmap_ffi")]
-    FFI = 2,
+    #[cfg(feature = "tokmap_rule")]
+    Rule = 2,
     #[cfg(feature = "tokmap_python")]
     Python = 3,
 }
@@ -32,6 +33,8 @@ impl TokenMapperKind {
         if tokmap_impl_example::TokenMapperImpl::is_option_supported(opt) { v.push("example"); }
         #[cfg(feature = "tokmap_user")]
         if tokmap_impl_user::TokenMapperImpl::is_option_supported(opt) { v.push("user"); }
+        #[cfg(feature = "tokmap_rule")]
+        if tokmap_impl_rule::TokenMapperImpl::is_option_supported(opt) { v.push("rule"); }
 
         v
     }
@@ -43,6 +46,8 @@ pub enum TokenMapperDispatch {
     Example(tokmap_impl_example::TokenMapperImpl),
     #[cfg(feature = "tokmap_user")]
     User(tokmap_impl_user::TokenMapperImpl),
+    #[cfg(feature = "tokmap_rule")]
+    Rule(tokmap_impl_rule::TokenMapperImpl),
 }
 
 impl TokenMapperDispatch {
@@ -54,6 +59,8 @@ impl TokenMapperDispatch {
             }
             #[cfg(feature = "tokmap_user")]
             TokenMapperKind::User => Self::User(tokmap_impl_user::TokenMapperImpl::new(options)?),
+            #[cfg(feature = "tokmap_rule")]
+            TokenMapperKind::Rule => Self::Rule(tokmap_impl_rule::TokenMapperImpl::new(options)?),
         })
     }
 }
@@ -65,6 +72,8 @@ macro_rules! tokmap_dispatch {
             TokenMapperDispatch::Example($n) => $($e)*,
             #[cfg(feature = "tokmap_user")]
             TokenMapperDispatch::User($n) => $($e)*,
+            #[cfg(feature = "tokmap_rule")]
+            TokenMapperDispatch::Rule($n) => $($e)*,
         }
     };
 }

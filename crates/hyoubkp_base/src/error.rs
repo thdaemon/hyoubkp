@@ -7,6 +7,8 @@ pub type Result<T> = std::result::Result<T, Error>;
 trait IntoHyoubkpError: StdError {}
 impl IntoHyoubkpError for std::io::Error {}
 impl IntoHyoubkpError for std::num::ParseIntError {}
+#[cfg(feature = "toml")]
+impl IntoHyoubkpError for toml::de::Error {}
 
 #[derive(Debug)]
 pub struct Error {
@@ -17,7 +19,7 @@ pub struct Error {
 impl StdError for Error {}
 
 impl Error {
-    pub(crate) fn new(id: Option<&'static str>, s: impl AsRef<str>) -> Self {
+    pub fn new(id: Option<&'static str>, s: impl AsRef<str>) -> Self {
         Self {
             message: format!("{}: {}", id.unwrap_or("Hyoubkp error"), s.as_ref()),
             backtrace: std::backtrace::Backtrace::capture(),
@@ -40,6 +42,7 @@ where
     }
 }
 
+#[macro_export]
 macro_rules! err {
     ($msg:literal $(,)?) => {
         $crate::error::Error::new(None, $msg)
@@ -49,14 +52,15 @@ macro_rules! err {
     };
 }
 
+#[macro_export]
 macro_rules! bail {
     ($msg:literal $(,)?) => {
-        return Err($crate::error::err!($msg))
+        return Err($crate::err!($msg))
     };
     ($fmt:expr, $($arg:tt)*) => {
-        return Err($crate::error::err!($fmt, $($arg)*))
+        return Err($crate::err!($fmt, $($arg)*))
     };
 }
 
 pub(crate) use bail;
-pub(crate) use err;
+//pub(crate) use err;

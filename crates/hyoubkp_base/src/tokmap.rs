@@ -12,6 +12,7 @@ pub trait TokenMapper {
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
 pub enum TokenMapperOption {
+    Placeholder,
     RuleFile,
 }
 
@@ -20,6 +21,7 @@ impl TokenMapperOption {
 
     pub fn description(&self) -> &'static str {
         match self {
+            Self::Placeholder => "",
             Self::RuleFile => "rule-file=<file path> - specify rule files for tokmap",
         }
     }

@@ -7,7 +7,7 @@ edition = "2021"
 default = ["tokmap_example", "datagen_gnucash"]
 tokmap_example = ["dep:hyoubkp_tokmap_example"]
 tokmap_user = ["dep:hyoubkp_tokmap_example", "hyoubkp_tokmap_example/user"]
-tokmap_ffi = ["dep:hyoubkp_tokmap_ffi"]
+tokmap_rule = ["dep:hyoubkp_tokmap_rule"]
 tokmap_python = ["dep:hyoubkp_tokmap_python"]
 datagen_gnucash = ["dep:hyoubkp_datagen_gnucash"]
 clap = ["dep:clap"]
@@ -15,7 +15,7 @@ clap = ["dep:clap"]
 [dependencies]
 hyoubkp_base = { path = "../hyoubkp_base" }
 hyoubkp_tokmap_example = { path = "../hyoubkp_tokmap_example", optional = true }
-hyoubkp_tokmap_ffi = { path = "../hyoubkp_tokmap_ffi", optional = true }
+hyoubkp_tokmap_rule = { path = "../hyoubkp_tokmap_rule", optional = true }
 hyoubkp_tokmap_python = { path = "../hyoubkp_tokmap_python", optional = true }
 hyoubkp_datagen_gnucash = { path = "../hyoubkp_datagen_gnucash", optional = true }
 clap = { workspace = true, optional = true }

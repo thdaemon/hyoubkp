@@ -5,7 +5,9 @@ edition = "2021"
 
 [features]
 clap = ["dep:clap"]
+toml = ["dep:toml"]
 
 [dependencies]
 chrono = "0.4.38"
 clap = { workspace = true, optional = true }
+toml = { workspace = true, optional = true }
