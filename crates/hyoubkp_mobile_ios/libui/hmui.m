@@ -22,7 +22,7 @@ void appui_uikit_textField_set_text(void *textField, char const *s) {
     _self.text = [NSString stringWithUTF8String:s];
 }
 
-void appui_uikit_alertctrl(void *vc, char const *title, char const *message, void const *callback_userdata) {
+void appui_uikit_alertctrl(void *vc, char const *title, char const *message, void *callback, void *callback_userdata) {
     UIViewController *_self = (__bridge UIViewController *)vc;
 
     UIAlertController* alert = [UIAlertController alertControllerWithTitle:[NSString stringWithUTF8String:title]
@@ -31,7 +31,10 @@ void appui_uikit_alertctrl(void *vc, char const *title, char const *message, voi
  
     UIAlertAction* defaultAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault
         handler:^(UIAlertAction *action) {
-            // todo
+            if (callback) {
+                void (*fn)(void *action, void *callback_userdata) = callback;
+                fn((__bridge void *)action, callback_userdata);
+            }
         }
     ];
  

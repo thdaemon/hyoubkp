@@ -7,8 +7,12 @@ edition = "2021"
 name = "HyoubkpMobile"
 path = "src/main.rs"
 
+[features]
+tokmap_user = ["hyoubkp/tokmap_user"]
+tokmap_rule = ["hyoubkp/tokmap_rule"]
+
 [dependencies]
-hyoubkp = { path = "../hyoubkp", features = ["tokmap_user"] }
+hyoubkp = { path = "../hyoubkp" }
 hyoubkp_base = { path = "../hyoubkp_base" }
 
 [build-dependencies]

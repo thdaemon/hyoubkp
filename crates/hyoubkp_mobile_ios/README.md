@@ -13,8 +13,10 @@ I don't have a Mac, so only cross-compiling on Linux is supported! :-)
 ## Building the Project
 
 ```
-cargo build -r -p hyoubkp_mobile_ios --features hyoubkp/tokmap_rule --target aarch64-apple-ios
+cargo build -r -p hyoubkp_mobile_ios --features tokmap_rule --target aarch64-apple-ios
 ```
+
+> To use the `User` tokmap, change `--features tokmap_rule` to `--features tokmap_user`
 
 ## Creating the App Bundle and IPA
 

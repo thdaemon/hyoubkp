@@ -226,7 +226,8 @@ extern "C" {
         vc: *mut ::std::os::raw::c_void,
         title: *const ::std::os::raw::c_char,
         message: *const ::std::os::raw::c_char,
-        callback_userdata: *const ::std::os::raw::c_void,
+        callback: *mut ::std::os::raw::c_void,
+        callback_userdata: *mut ::std::os::raw::c_void,
     );
 }
 extern "C" {

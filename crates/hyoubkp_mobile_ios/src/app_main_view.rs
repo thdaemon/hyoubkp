@@ -1,11 +1,17 @@
 #![allow(non_snake_case)]
 
 use std::{
-    cell::OnceCell, collections::HashMap, ffi::{CStr, CString, OsStr}, os::unix::ffi::OsStrExt, path::{Path, PathBuf}
+    cell::OnceCell,
+    collections::HashMap,
+    ffi::{c_void, CStr, CString, OsStr},
+    os::unix::ffi::OsStrExt,
+    path::{Path, PathBuf},
 };
 
 use hyoubkp::datagen::{DataGenDispatch, DataGenKind};
 use hyoubkp_base::datagen::DataGen;
+#[allow(unused_imports)]
+use hyoubkp_base::tokmap::TokenMapperOption;
 
 pub use hyoubkp::executor::Executor;
 pub use hyoubkp::tokmap::TokenMapperKind;
@@ -28,7 +34,7 @@ static mut APPCTX: OnceCell<AppMainView> = OnceCell::new();
 static USERDEFAULTS_KEY_NUMBER: &CStr = c"hm_number";
 
 #[no_mangle]
-unsafe extern "C" fn app_action_MainViewController_self_Load(
+extern "C" fn app_action_MainViewController_self_Load(
     vc: *mut ::std::os::raw::c_void,
     _sender: *mut ::std::os::raw::c_void,
     _event: *mut ::std::os::raw::c_void,
@@ -63,23 +69,61 @@ unsafe extern "C" fn app_action_MainViewController_self_Load(
         if number == 0 {}
     }
 
-    let tokmap_options = HashMap::new();
+    #[allow(unused_mut)]
+    let mut tokmap_options = HashMap::new();
 
-    let mut executor = Executor::new(TokenMapperKind::User, &tokmap_options).unwrap();
-    executor.enable_realtime_date();
+    let tokmap_kind;
 
-    APPCTX
-        .set(AppMainView {
-            executor,
-            number,
-            output_file_name,
-            output_file_name_backup: document_path.join("output.csv.bak"),
-            rule_file_name,
-        })
-        .unwrap();
+    #[cfg(feature = "tokmap_user")]
+    {
+        tokmap_kind = TokenMapperKind::User;
+    }
 
-    let label1 = appui_MainViewController_label1(vc);
-    appui_uikit_label_set_text(label1, c"[waiting for input]".as_ptr());
+    #[cfg(feature = "tokmap_rule")]
+    {
+        tokmap_kind = TokenMapperKind::Rule;
+        tokmap_options.insert(
+            TokenMapperOption::RuleFile,
+            rule_file_name.to_string_lossy().into_owned().clone(),
+        );
+    }
+
+    match Executor::new(tokmap_kind, &tokmap_options) {
+        Ok(mut executor) => {
+            executor.enable_realtime_date();
+
+            unsafe {
+                APPCTX
+                    .set(AppMainView {
+                        executor,
+                        number,
+                        output_file_name,
+                        output_file_name_backup: document_path.join("output.csv.bak"),
+                        rule_file_name,
+                    })
+                    .unwrap()
+            };
+
+            let label1 = unsafe { appui_MainViewController_label1(vc) };
+            unsafe { appui_uikit_label_set_text(label1, c"[waiting for input]".as_ptr()) };
+        }
+        Err(e) => {
+            let e = CString::new(e.to_string()).unwrap_or_default();
+
+            extern "C" fn callback(_action: *mut c_void, _userdata: *mut c_void) {
+                std::process::exit(1);
+            }
+            unsafe {
+                appui_uikit_alertctrl(
+                    vc,
+                    c"Error".as_ptr(),
+                    e.as_ptr(),
+                    callback as *mut c_void,
+                    std::ptr::null_mut(),
+                )
+            };
+        }
+    }
 }
 
 #[no_mangle]
@@ -101,8 +145,10 @@ extern "C" fn app_action_MainViewController_button1_Tapped(
             let output_file_name_backup = &ctx.output_file_name_backup;
 
             let datagen_impl = DataGenDispatch::new(DataGenKind::GnuCash);
-        
-            std::fs::copy(output_file_name, output_file_name_backup).unwrap();
+
+            if output_file_name.exists() {
+                std::fs::copy(output_file_name, output_file_name_backup).unwrap();
+            }
 
             let mut file = std::fs::OpenOptions::new()
                 .create(true)
@@ -114,20 +160,28 @@ extern "C" fn app_action_MainViewController_button1_Tapped(
             datagen_impl
                 .write_to(&mut file, std::slice::from_ref(&trans), ctx.number as u32)
                 .unwrap();
-        
+
             ctx.number += 1;
             unsafe {
                 appui_userdefaults_set_i32(USERDEFAULTS_KEY_NUMBER.as_ptr(), ctx.number);
             }
-        
+
             unsafe {
                 appui_uikit_textField_set_text(text_field1, c"".as_ptr());
             }
-        },
+        }
         Err(e) => {
             let e = CString::new(e.to_string()).unwrap_or_default();
-            unsafe { appui_uikit_alertctrl(vc, c"Error".as_ptr(), e.as_ptr(), std::ptr::null()) };
-        },
+            unsafe {
+                appui_uikit_alertctrl(
+                    vc,
+                    c"Error".as_ptr(),
+                    e.as_ptr(),
+                    std::ptr::null_mut(),
+                    std::ptr::null_mut(),
+                )
+            };
+        }
     }
 }
 
