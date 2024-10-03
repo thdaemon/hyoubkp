@@ -24,7 +24,6 @@
 
 int appui_main(int argc, char *argv[]) {
     @autoreleasepool {
-	    NSLog(@"hello!!!\n");
         return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
     }
 }

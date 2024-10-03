@@ -16,6 +16,11 @@ void appui_uikit_control_set_enabled(void *control, int b) {
     _self.enabled = b;
 }
 
+void appui_uikit_control_send_action(void *control, unsigned int event) {
+    UIControl *_self = (__bridge UIControl *)control;
+    [_self sendActionsForControlEvents:event];
+}
+
 void appui_uikit_label_set_text(void *label, char const *s) {
     UILabel *_self = (__bridge UILabel *)label;
     _self.text = [NSString stringWithUTF8String:s];
@@ -67,4 +72,13 @@ void appui_userdefaults_set_i32(char const *key, int32_t i) {
 
 int32_t appui_userdefaults_get_i32(char const *key) {
     return (int32_t)[[NSUserDefaults standardUserDefaults] integerForKey:[NSString stringWithUTF8String:key]];
+}
+
+void appui_userdefaults_set_string(char const *key, char const *s) {
+    NSString *string = [NSString stringWithUTF8String:s];
+    [[NSUserDefaults standardUserDefaults] setObject:string forKey:[NSString stringWithUTF8String:key]];
+}
+
+void *appui_userdefaults_get_string(char const *key) {
+    return (__bridge_retained void *)[[NSUserDefaults standardUserDefaults] stringForKey:[NSString stringWithUTF8String:key]];
 }

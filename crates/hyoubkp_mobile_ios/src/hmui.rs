@@ -211,6 +211,12 @@ extern "C" {
     );
 }
 extern "C" {
+    pub fn appui_uikit_control_send_action(
+        control: *mut ::std::os::raw::c_void,
+        event: ::std::os::raw::c_uint,
+    );
+}
+extern "C" {
     pub fn appui_uikit_label_set_text(
         label: *mut ::std::os::raw::c_void,
         s: *const ::std::os::raw::c_char,
@@ -247,6 +253,17 @@ extern "C" {
 }
 extern "C" {
     pub fn appui_userdefaults_get_i32(key: *const ::std::os::raw::c_char) -> i32;
+}
+extern "C" {
+    pub fn appui_userdefaults_set_string(
+        key: *const ::std::os::raw::c_char,
+        s: *const ::std::os::raw::c_char,
+    );
+}
+extern "C" {
+    pub fn appui_userdefaults_get_string(
+        key: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn appui_MainViewController_label1(

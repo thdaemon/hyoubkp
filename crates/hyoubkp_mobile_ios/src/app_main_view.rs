@@ -30,6 +30,7 @@ struct AppMainView {
 static mut APPCTX: OnceCell<AppMainView> = OnceCell::new();
 
 static USERDEFAULTS_KEY_NUMBER: &CStr = c"hm_number";
+static USERDEFAULTS_KEY_STAGING_EXPR: &CStr = c"hm_staging_expr";
 
 #[no_mangle]
 extern "C" fn app_action_MainViewController_self_Load(
@@ -148,6 +149,18 @@ You should have received a copy of the GNU Affero General Public License along w
         let label = appui_MainViewController_footLabel(vc);
         appui_uikit_label_set_text(label, foot_text.as_ptr());
     }
+
+    let staging_expr =
+        unsafe { appui_userdefaults_get_string(USERDEFAULTS_KEY_STAGING_EXPR.as_ptr()) };
+    if !staging_expr.is_null() {
+        unsafe {
+            let text_field1 = appui_MainViewController_textField1(vc);
+            appui_uikit_textField_set_text(text_field1, appui_string_cstr(staging_expr));
+            appui_string_dealloc(staging_expr);
+
+            appui_uikit_control_send_action(text_field1, 1 << 17); // UIControlEventEditingChanged
+        }
+    }
 }
 
 #[no_mangle]
@@ -192,6 +205,10 @@ extern "C" fn app_action_MainViewController_button1_Tapped(
 
             unsafe {
                 appui_uikit_textField_set_text(text_field1, c"".as_ptr());
+                appui_userdefaults_set_string(
+                    USERDEFAULTS_KEY_STAGING_EXPR.as_ptr(),
+                    std::ptr::null(),
+                );
             }
         }
         Err(e) => {
@@ -215,9 +232,12 @@ extern "C" fn app_action_MainViewController_textField1_DidChange(
     sender: *mut ::std::os::raw::c_void,
     _event: *mut ::std::os::raw::c_void,
 ) {
-    let expr = unsafe { CStr::from_ptr(appui_uikit_textField_get_text(sender)) }
-        .to_str()
-        .unwrap();
+    let text = unsafe { CStr::from_ptr(appui_uikit_textField_get_text(sender)) };
+    unsafe {
+        appui_userdefaults_set_string(USERDEFAULTS_KEY_STAGING_EXPR.as_ptr(), text.as_ptr());
+    }
+
+    let expr = text.to_str().unwrap();
 
     let executor = unsafe { &mut APPCTX.get_mut().unwrap().executor };
 
