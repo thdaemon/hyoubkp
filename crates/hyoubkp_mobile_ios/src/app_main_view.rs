@@ -133,7 +133,7 @@ extern "C" fn app_action_MainViewController_self_Load(
     }
 
     let foot_text = CString::new(format!(
-        r##"App version: {}, Hyoubkp version: {}, token-mapper: {} {}
+        r##"App version: {}, Hyoubkp version: {}, token-mapper: {} {}, git rev: {}
 
 Copyright © 2024 Eric Tian <thxdaemon@gmail.com>. All rights reserved.
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU Affero General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -142,7 +142,8 @@ You should have received a copy of the GNU Affero General Public License along w
         env!("CARGO_PKG_VERSION"),
         hyoubkp::VERSION,
         tokmap_kind.as_str(),
-        tokmap_version
+        tokmap_version,
+        env!("HM_GIT_HASH")
     )).unwrap_or_default();
 
     unsafe {
@@ -205,10 +206,7 @@ extern "C" fn app_action_MainViewController_button1_Tapped(
 
             unsafe {
                 appui_uikit_textField_set_text(text_field1, c"".as_ptr());
-                appui_userdefaults_set_string(
-                    USERDEFAULTS_KEY_STAGING_EXPR.as_ptr(),
-                    std::ptr::null(),
-                );
+                appui_userdefaults_set_string(USERDEFAULTS_KEY_STAGING_EXPR.as_ptr(), c"".as_ptr());
             }
         }
         Err(e) => {
