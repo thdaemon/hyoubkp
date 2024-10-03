@@ -2,6 +2,15 @@
 #import <UIKit/UIKit.h>
 
 
+char const *appui_string_cstr(void *s) {
+    NSString *string = (__bridge NSString *) s;
+    return [string UTF8String];
+}
+
+void appui_string_dealloc(void *s) {
+    NSString *string = (__bridge_transfer NSString *) s;
+}
+
 void appui_uikit_control_set_enabled(void *control, int b) {
     UIControl *_self = (__bridge UIControl *)control;
     _self.enabled = b;
@@ -42,10 +51,10 @@ void appui_uikit_alertctrl(void *vc, char const *title, char const *message, voi
     [_self presentViewController:alert animated:YES completion:nil];
 }
 
-char const *appui_fs_document_path() {
+void *appui_fs_document_path() {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = [paths firstObject];
-    return (__bridge void *)[documentsDirectory UTF8String];
+    return (__bridge_retained void *)documentsDirectory;
 }
 
 bool appui_userdefaults_fsync() {

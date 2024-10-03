@@ -5,6 +5,9 @@
 
 int appui_main(int argc, char *argv[]);
 
+char const *appui_string_cstr(void *s);
+void appui_string_dealloc(void *s);
+
 void appui_uikit_control_set_enabled(void *control, int b);
 void appui_uikit_label_set_text(void *label, char const *s);
 char const *appui_uikit_textField_get_text(void *textField);
@@ -12,7 +15,7 @@ void appui_uikit_textField_set_text(void *textField, char const *s);
 
 void appui_uikit_alertctrl(void *vc, char const *title, char const *message, void *callback, void *callback_userdata);
 
-char const *appui_fs_document_path();
+void *appui_fs_document_path();
 
 bool appui_userdefaults_fsync();
 void appui_userdefaults_set_i32(char const *key, int32_t i);

@@ -211,7 +211,7 @@
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [super dealloc];
+    //[super dealloc];
 }
 
 UI_ACTION_HANDLER_IMPL(MainViewController, button1, Tapped)

@@ -37,8 +37,13 @@ extern "C" fn app_action_MainViewController_self_Load(
     _sender: *mut ::std::os::raw::c_void,
     _event: *mut ::std::os::raw::c_void,
 ) {
-    let document_path = unsafe { CStr::from_ptr(appui_fs_document_path()) };
-    let document_path = Path::new(OsStr::from_bytes(document_path.to_bytes()));
+    let document_path = unsafe {
+        let path = appui_fs_document_path();
+        let document_path = CStr::from_ptr(appui_string_cstr(path));
+        let document_path = Path::new(OsStr::from_bytes(document_path.to_bytes()));
+        appui_string_dealloc(path);
+        document_path
+    };
 
     let output_file_name = document_path.join("output.csv");
     let rule_file_name = document_path.join("rule.toml");

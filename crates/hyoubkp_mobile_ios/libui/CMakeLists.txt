@@ -10,4 +10,6 @@ add_library(hmui_ios STATIC
 	MainViewController.m
 )
 
+target_compile_options(hmui_ios PRIVATE -fobjc-arc)
+
 install(TARGETS hmui_ios DESTINATION .)

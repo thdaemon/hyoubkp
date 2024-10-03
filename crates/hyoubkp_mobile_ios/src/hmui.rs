@@ -199,6 +199,12 @@ extern "C" {
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
+    pub fn appui_string_cstr(s: *mut ::std::os::raw::c_void) -> *const ::std::os::raw::c_char;
+}
+extern "C" {
+    pub fn appui_string_dealloc(s: *mut ::std::os::raw::c_void);
+}
+extern "C" {
     pub fn appui_uikit_control_set_enabled(
         control: *mut ::std::os::raw::c_void,
         b: ::std::os::raw::c_int,
@@ -231,7 +237,7 @@ extern "C" {
     );
 }
 extern "C" {
-    pub fn appui_fs_document_path() -> *const ::std::os::raw::c_char;
+    pub fn appui_fs_document_path() -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn appui_userdefaults_fsync() -> bool;
