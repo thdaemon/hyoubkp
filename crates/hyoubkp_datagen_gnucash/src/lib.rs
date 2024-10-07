@@ -1,5 +1,5 @@
 use csv::WriterBuilder;
-use hyoubkp_base::{datagen::DataGen, transaction::Transaction};
+use hyoubkp_base::{datagen::DataGen, transaction::{Amount, Transaction}};
 use uuid::Uuid;
 
 #[derive(serde::Serialize)]
@@ -68,8 +68,8 @@ impl DataGen for DataGenImpl {
                         description: description,
                         reconcile: String::from("n"),
                         full_account_name: e.account.clone(),
-                        amount_num: e.amount.to_string(), // todo: shares
-                        value_num: e.amount.to_string(),
+                        amount_num: Self::amount_to_amount(&e.amount),
+                        value_num: Self::amount_to_value(&e.amount),
                     })?;
                 } else if dc == 2 {
                     wtr.serialize(GnuCashCSVRow {
@@ -79,13 +79,29 @@ impl DataGen for DataGenImpl {
                         description: description,
                         reconcile: String::from("n"),
                         full_account_name: e.account.clone(),
-                        amount_num: format!("-{}", e.amount), // todo: shares
-                        value_num: format!("-{}", e.amount),
+                        amount_num: format!("-{}", Self::amount_to_amount(&e.amount)),
+                        value_num: format!("-{}", Self::amount_to_value(&e.amount)),
                     })?;
                 }
             }
         }
 
         Ok(())
+    }
+}
+
+impl DataGenImpl {
+    fn amount_to_amount(amount: &Amount) -> String {
+        match amount {
+            Amount::Shares(s, _) => s.to_string(),
+            Amount::Price(p) => p.to_string(),
+        }
+    }
+
+    fn amount_to_value(amount: &Amount) -> String {
+        match amount {
+            Amount::Shares(_, p) => p.to_string(),
+            Amount::Price(p) => p.to_string(),
+        }
     }
 }

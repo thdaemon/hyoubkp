@@ -8,5 +8,3 @@ pub mod transaction;
 
 pub type AccountToken = String;
 pub type HintToken = String;
-
-pub type Shares = u32;

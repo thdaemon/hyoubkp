@@ -5,7 +5,7 @@ use crate::{
     expr::{Expr, ExprCreditPrice},
     price::Price,
     tokmap::TokenMapper,
-    HintToken, Shares,
+    HintToken,
 };
 
 #[derive(Default, Debug)]
@@ -27,14 +27,14 @@ pub struct Entry {
 
 #[derive(Debug)]
 pub enum Amount {
-    Shares(Shares, Price),
+    Shares(Price, Price),
     Price(Price),
 }
 
 impl std::fmt::Display for Amount {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Amount::Shares(_, _) => todo!(),
+            Amount::Shares(s, p) => write!(f, "{} / {}", s, p),
             Amount::Price(p) => write!(f, "{}", p),
         }
     }
@@ -218,7 +218,10 @@ impl TransactionFactory {
                             .as_ref()
                             .map(|a| a.clone())
                             .unwrap_or_else(|| token_mapper.fallback_account()),
-                        amount: Amount::Price(trans.price_debit),
+                        amount: match trans.shares {
+                            Some(s) => Amount::Shares(s, trans.price_debit),
+                            None => Amount::Price(trans.price_debit),
+                        },
                     });
 
                     if trans.price_credit_chain.is_empty() {

@@ -1,4 +1,4 @@
-use crate::{price::Price, AccountToken, HintToken, Shares};
+use crate::{price::Price, AccountToken, HintToken};
 
 #[derive(Default, Debug)]
 pub struct CompoundExpr {
@@ -21,7 +21,7 @@ impl Expr {
 
 #[derive(Debug, Clone)]
 pub struct ExprTrans {
-    pub shares: Option<Shares>,
+    pub shares: Option<Price>,
     pub price_debit: Price,
     pub price_credit_chain: Vec<ExprCreditPrice>,
     pub cash_backs: Vec<Price>,
