@@ -1,6 +1,7 @@
 /target
 /Cargo.lock
 /.vscode
+/compile_flags.txt
 
 /crates/hyoubkp_tokmap_example/src/user.rs
 /tests/user

@@ -25,7 +25,8 @@
 
     UIImage *menuImage = [UIImage systemImageNamed:@"ellipsis.circle"];
     UIBarButtonItem *menuButton = [[UIBarButtonItem alloc] initWithImage:menuImage style:UIBarButtonItemStylePlain target:self action:nil];
-    UIAction *option1 = [UIAction actionWithTitle:@"Not implemented yet" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+    UIAction *option1 = [UIAction actionWithTitle:@"Show Output" image:nil identifier:nil handler:^(__kindof UIAction * _Nonnull action) {
+        APP_ACTION_HANDLER_INVOKE(MainViewController, menu1, Tapped, nil, nil);
     }];
     
     UIMenu *menu = [UIMenu menuWithTitle:@"" children:@[option1]];

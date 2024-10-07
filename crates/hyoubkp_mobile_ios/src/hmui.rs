@@ -202,7 +202,7 @@ extern "C" {
     pub fn appui_string_cstr(s: *mut ::std::os::raw::c_void) -> *const ::std::os::raw::c_char;
 }
 extern "C" {
-    pub fn appui_string_dealloc(s: *mut ::std::os::raw::c_void);
+    pub fn appui_object_deref(o: *mut ::std::os::raw::c_void);
 }
 extern "C" {
     pub fn appui_uikit_control_set_enabled(
@@ -243,6 +243,21 @@ extern "C" {
     );
 }
 extern "C" {
+    pub fn appui_uikit_viewcontroller_set_modalPresentationStyle(
+        vc: *mut ::std::os::raw::c_void,
+        value: ::std::os::raw::c_int,
+    );
+}
+extern "C" {
+    pub fn appui_uikit_viewcontroller_presentViewController(
+        vc: *mut ::std::os::raw::c_void,
+        vc_to_present: *mut ::std::os::raw::c_void,
+        animated: bool,
+        _unimplemented_callback: *mut ::std::os::raw::c_void,
+        _unimplemented_callback_userdata: *mut ::std::os::raw::c_void,
+    );
+}
+extern "C" {
     pub fn appui_fs_document_path() -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
@@ -266,6 +281,11 @@ extern "C" {
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
+    pub fn appui_nsurl_new_fileURLWithPath(
+        path: *const ::std::os::raw::c_char,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
     pub fn appui_MainViewController_label1(
         obj: *mut ::std::os::raw::c_void,
     ) -> *mut ::std::os::raw::c_void;
@@ -281,7 +301,34 @@ extern "C" {
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
+    pub fn appui_WebViewController_new() -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn appui_WebViewController_mainURL(
+        obj: *mut ::std::os::raw::c_void,
+    ) -> *mut ::std::os::raw::c_void;
+}
+extern "C" {
+    pub fn appui_WebViewController_mainURL_set_bridge(
+        obj: *mut ::std::os::raw::c_void,
+        v: *mut ::std::os::raw::c_void,
+    );
+}
+extern "C" {
+    pub fn appui_WebViewController_mainURL_set_transfer(
+        obj: *mut ::std::os::raw::c_void,
+        v: *mut ::std::os::raw::c_void,
+    );
+}
+extern "C" {
     pub fn app_action_MainViewController_self_Load(
+        vc: *mut ::std::os::raw::c_void,
+        sender: *mut ::std::os::raw::c_void,
+        event: *mut ::std::os::raw::c_void,
+    );
+}
+extern "C" {
+    pub fn app_action_MainViewController_menu1_Tapped(
         vc: *mut ::std::os::raw::c_void,
         sender: *mut ::std::os::raw::c_void,
         event: *mut ::std::os::raw::c_void,

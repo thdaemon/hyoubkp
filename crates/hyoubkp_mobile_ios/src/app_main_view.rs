@@ -3,7 +3,7 @@
 use std::{
     cell::OnceCell,
     collections::HashMap,
-    ffi::{c_void, CStr, CString, OsStr},
+    ffi::{c_char, c_void, CStr, CString, OsStr},
     os::unix::ffi::OsStrExt,
     path::{Path, PathBuf},
 };
@@ -42,7 +42,7 @@ extern "C" fn app_action_MainViewController_self_Load(
         let path = appui_fs_document_path();
         let document_path = CStr::from_ptr(appui_string_cstr(path));
         let document_path = Path::new(OsStr::from_bytes(document_path.to_bytes()));
-        appui_string_dealloc(path);
+        appui_object_deref(path);
         document_path
     };
 
@@ -157,7 +157,7 @@ You should have received a copy of the GNU Affero General Public License along w
         unsafe {
             let text_field1 = appui_MainViewController_textField1(vc);
             appui_uikit_textField_set_text(text_field1, appui_string_cstr(staging_expr));
-            appui_string_dealloc(staging_expr);
+            appui_object_deref(staging_expr);
 
             appui_uikit_control_send_action(text_field1, 1 << 17); // UIControlEventEditingChanged
         }
@@ -249,5 +249,32 @@ extern "C" fn app_action_MainViewController_textField1_DidChange(
 
     unsafe {
         appui_uikit_label_set_text(label1, text.as_ptr());
+    }
+}
+
+#[no_mangle]
+extern "C" fn app_action_MainViewController_menu1_Tapped(
+    vc: *mut ::std::os::raw::c_void,
+    _sender: *mut ::std::os::raw::c_void,
+    _event: *mut ::std::os::raw::c_void,
+) {
+    unsafe {
+        let output_file_name = &mut APPCTX.get_mut().unwrap().output_file_name;
+
+        let vc_webview = appui_WebViewController_new();
+        let main_url = appui_nsurl_new_fileURLWithPath(
+            output_file_name.as_os_str().as_bytes().as_ptr() as *mut c_char,
+        );
+        appui_WebViewController_mainURL_set_transfer(vc_webview, main_url);
+
+        appui_uikit_viewcontroller_set_modalPresentationStyle(vc_webview, 1); // UIModalPresentationPageSheet
+        appui_uikit_viewcontroller_presentViewController(
+            vc,
+            vc_webview,
+            true,
+            std::ptr::null_mut(),
+            std::ptr::null_mut(),
+        );
+        appui_object_deref(vc_webview);
     }
 }

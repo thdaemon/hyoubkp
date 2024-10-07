@@ -8,6 +8,7 @@ add_library(hmui_ios STATIC
 	hmui.m
 	main.m
 	MainViewController.m
+	WebViewController.m
 )
 
 target_compile_options(hmui_ios PRIVATE -fobjc-arc)
