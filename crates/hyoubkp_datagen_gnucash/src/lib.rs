@@ -50,10 +50,10 @@ impl DataGen for DataGenImpl {
             let transaction_id = Uuid::new_v4().as_simple().to_string();
 
             for (e, dc) in trans
-                .debit_entries
+                .credit_entries
                 .iter()
-                .map(|x| (x, 1))
-                .chain(trans.credit_entries.iter().map(|x| (x, 2)))
+                .map(|x| (x, 2))
+                .chain(trans.debit_entries.iter().map(|x| (x, 1)))
             {
                 let mut description = trans.description.clone().unwrap_or_default();
                 if description == "" {
